@@ -1,5 +1,9 @@
+* {
+    transition: all 0.5s ease-out;
+  }
+
 html {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: inline-block;
     text-align: center;
 }
@@ -9,18 +13,79 @@ body {
     width: 100%;
 }
 
+h2{
+    margin-left: 120px;
+}
+
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 120px;
+    background-color: #f1f1f1;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+  }
+  
+  .sidebar a {
+    display: block;
+    color: black;
+    padding: 16px;
+    text-decoration: none;
+  }
+   
+  .sidebar a.active {
+    background-color: #04AA6D;
+    color: white;
+  }
+  
+  .sidebar a:hover:not(.active) {
+    background-color: #555;
+    color: white;
+  }
+  
+  div.content {
+    margin-left: 120px;
+    padding: 1px 16px;
+    height: 1000px;
+  }
+  
+  @media screen and (max-width: 700px) {
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+    }
+    .sidebar a {float: left;}
+    div.content {margin-left: 0;}
+  }
+  
+  @media screen and (max-width: 400px) {
+    .sidebar a {
+      text-align: center;
+      float: none;
+    }
+  }
+
 .topnav {
     overflow: hidden;
     background-color: #049faa;
     color: white;
     font-size: 1rem;
-    padding: 5px;
+    padding: 2px;
+}
+
+#imagen{
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-left: 120px;
 }
 
 #authentication-bar{
     background-color:mintcream;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-left: 120px;
 }
 
 #user-details{
@@ -32,27 +97,88 @@ body {
 }
 
 .card {
+    display: block;
+    position: relative;
+    max-width: 262px;
     background-color: white;
     box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
-    padding: 5%;
+    padding: 3%;
+    border-radius: 10px;
+    margin: 3px;
+    text-decoration: none;
+    z-index: 0;
+    overflow: hidden;
+    &:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: -16px;
+        right: -16px;
+        background: #008391;
+        height: 32px;
+        width: 32px;
+        border-radius: 32px;
+        transform: scale(1);
+        transform-origin: 50% 50%;
+        transition: transform 0.5s ease-out;        
+      }
+    
+      &:hover:before {
+        transform: scale(10);
+      }
+}
+.reading {    
+    color: #193036;
+}
+
+.card:hover > p {
+    transition: all 0.3s ease-out;
+    color: #ffffff;
+}
+
+.card:hover > .reading {
+    transition: all 0.3s ease-out;
+    color: #ffffff;
 }
 
 .cards {
-    max-width: 800px;
+    max-width: 2000px;
     margin: 0 auto;
     margin-bottom: 10px;
+    margin-left: 120px;
     display: grid;
-    grid-gap: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 2fr));
+    grid-gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 2fr));
 }
 
-.reading {
-    color: #193036;
+.card2 {
+    display: block;
+    position: relative;
+    background-color: white;
+    box-shadow: 2px 2px 12px 1px rgba(140,140,140,.5);
+    padding: 3%;
+    border-radius: 10px;
+    margin: 3px;
+    text-decoration: none;
+    z-index: 0;
+    overflow: hidden;
+    
+}
+
+.cards2 {
+    max-width: 2000px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    margin-left: 120px;
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 2fr));
 }
 
 .date-time{
     font-size: 0.8rem;
     color: #1282A2;
+    margin-left: 120px;
 }
 
 button {
@@ -110,9 +236,9 @@ th {
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
+    position: relative; /* Stay in place */
     z-index: 1; /* Sit on top */
-    left: 0;
+    left: 60;
     top: 0;
     width: 100%; /* Full width */
     height: 100%; /* Full height */

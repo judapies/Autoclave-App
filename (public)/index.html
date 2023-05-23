@@ -4,14 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Autoclave JP App</title>
-
     <!-- include Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
-
     <!-- include only the Firebase features as you need -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
-
     <script>
       // Replace with your app config object
       const firebaseConfig = {
@@ -23,15 +20,11 @@
         appId: "1:193692328420:web:09bcaea6caa5991deb67f1",
         measurementId: "G-K13WM99FZ2"
       };
-
-
       // Initialize firebase
       firebase.initializeApp(firebaseConfig);
-
       // Make auth and database references
       const auth = firebase.auth();
       const db = firebase.database();
-
     </script>
 
     <!-- include highchartsjs to build the charts-->
@@ -46,22 +39,26 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <!--reference a stylesheet-->
     <link rel="stylesheet" type="text/css" href="style.css">
-
   </head>
 
   <body>
-
+    <!--SIDE BAR-->
+    <div class="sidebar" id="sidebar">
+      <a href="/" id="home">Pagina Principal</a>
+      <a href="/" id="ciclos">Ver Ciclos anteriores</a>
+      <a href="/" id="logout-link">Cerrar Sesión</a>
+    </div>
+    
     <!--TOP BAR-->
     <div class="topnav">
-      <img src="https://jpinglobal.com/images/ando_sistema/Logo-JP_2019-05.png" alt="Logo" style="max-width: 100%;height: 200px;">
-      <h1>Autoclave JP App </h1>
+      <img src="https://jpinglobal.com/images/ando_sistema/Logo-JP_2019-05.png" id="imagen" alt="Logo" style="max-width: 100%;height: 100px;">
+      <h2>Autoclave JP App </h2>
     </div>
 
     <!--AUTHENTICATION BAR (USER DETAILS/LOGOUT BUTTON)-->
     <div id="authentication-bar" style="display: none;">
       <p><span id="authentication-status">Usuario</span>
-        <span id="user-details">USEREMAIL</span>
-        <a href="/" id="logout-link">(Cerrar Sesión)</a>
+        <span id="user-details">USEREMAIL</span>        
       </p>
     </div>
 
@@ -81,25 +78,22 @@
 
     <!--CONTENT (SENSOR READINGS)-->
     <div class="content-sign-in" id="content-sign-in" style="display: none;">
-
-      <!--LAST UPDATE-->
-      <p><span class ="date-time">Ultima Actualización: <span id="lastUpdate"></span></span></p>
       <div id="cards-div">
         <div class="cards">
           <!--TEMPERATURA 1-->
           <div class="card">
             <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> Temperatura 1</p>
-            <p><span class="reading"><span id="temp1"></span> &deg;C</span></p>
+            <p><span class="reading"><span class="reading" id="temp1"></span> &deg;C</span></p>
           </div>
           <!--TEMPERATURA 2-->
           <div class="card">
             <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> Temperatura 2</p>
-            <p><span class="reading"><span id="temp2"></span> &deg;C</span></p>
+            <p><span class="reading"><span class="reading" id="temp2"></span> &deg;C</span></p>
           </div>
           <!--TEMPERATURA 3-->
           <div class="card">
             <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> Temperatura 3</p>
-            <p><span class="reading"><span id="temp3"></span> &deg;C</span></p>
+            <p><span class="reading"><span class="reading" id="temp3"></span> &deg;C</span></p>
           </div>
           <!--TEMPERATURA 4-->
           <div class="card">
@@ -108,12 +102,12 @@
           </div>
           <!--PRESION CAMARA-->
           <div class="card">
-            <p><i class="fas fa-angle-double-down" style="color:#e1e437;"></i> Presion Camara</p>
+            <p><i class="fas fa-stopwatch" style="color:#059e8a;"></i> Presion Camara</p>
             <p><span class="reading"><span id="presc"></span> kPa</span></p>
           </div>
           <!--PRESION PRE-CAMARA-->
           <div class="card">
-            <p><i class="fas fa-angle-double-down" style="color:#e1e437;"></i> Presion Precamara</p>
+            <p><i class="fas fa-stopwatch" style="color:#059e8a;"></i> Presion Precamara</p>
             <p><span class="reading"><span id="prespre"></span> kPa</span></p>
           </div>
         </div>
@@ -121,28 +115,31 @@
       <!--CHARTS-->
       <div id="charts-div" style="display:block">
         <!--TEMPERATURE-CHART-->
-        <div class="cards">
-          <div class="card">
+        <div class="cards2">
+          <div class="card2">
             <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> GRAFICA DE TEMPERATURA 1</p>
             <div id="chart-temperature" class="chart-container"></div>
           </div>
         </div>
         <!--TEMPERATURE-CHART-->
-        <div class="cards">
-          <div class="card">
+        <div class="cards2">
+          <div class="card2">
             <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> GRAFICA DE TEMPERATURA 2</p>
             <div id="chart-temperature2" class="chart-container"></div>
           </div>
         </div>
         <!--PRESSURE-CHART-->
-        <div class="cards">
-          <div class="card">
-            <p><i class="fas fa-angle-double-down" style="color:#e1e437;"></i> GRAFICA DE PRESIÓN DE LA CAMARA</p>
+        <div class="cards2">
+          <div class="card2">
+            <p><i class="fas fa-stopwatch" style="color:#059e8a;"></i> GRAFICA DE PRESIÓN DE LA CAMARA</p>
             <div id="chart-pressure" class="chart-container"></div>
           </div>
         </div>
       </div>
 
+    <!--LAST UPDATE-->
+    <p><span class ="date-time">Ultima Actualización: <span id="lastUpdate"></span></span></p>
+    
     <!--BUTTONS TO HANDLE DATA-->
     <p>
       <!--View data button-->
@@ -168,17 +165,20 @@
     </div>
 
     <!--TABLE WITH ALL DATA-->
-    <div class ="cards">
-      <div class="card" id="table-container" style= "display:none;">
+    <div class ="cards2">
+      <div class="card2" id="table-container" style= "display:none;">
         <table id="readings-table">
             <tr id="theader">
-              <th>Timestamp</th>
-              <th>Temp1 (ºC)</th>
-              <th>Temp2 (ºC)</th>
-              <th>Temp3 (ºC)</th>
-              <th>Temp4 (ºC)</th>
-              <th>PresC (kPa)</th>
-              <th>PresP (kPa)</th>
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Ciclo</th>
+              <th>T1(ºC)</th>
+              <th>T2(ºC)</th>
+              <th>T3(ºC)</th>
+              <th>T4(ºC)</th>
+              <th>PC(kPa)</th>
+              <th>PP(kPa)</th>
+              <th>Evento</th>
             </tr>
             <tbody id="tbody">
             </tbody>

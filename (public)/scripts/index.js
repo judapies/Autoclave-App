@@ -1,5 +1,5 @@
-// convert epochtime to JavaScripte Date object
-function epochToJsDate(epochTime){
+  // convert epochtime to JavaScripte Date object
+  function epochToJsDate(epochTime){
     return new Date(epochTime*1000);
   }
   
@@ -12,7 +12,6 @@ function epochToJsDate(epochTime){
       ("00" + epochDate.getHours()).slice(-2) + ":" +
       ("00" + epochDate.getMinutes()).slice(-2) + ":" +
       ("00" + epochDate.getSeconds()).slice(-2);
-  
     return dateTime;
   }
   
@@ -24,15 +23,11 @@ function epochToJsDate(epochTime){
     //var x = formattedDate;
     var y = Number (value);
     chart.series[0].addPoint([x, y], true, false, true);
-    /*if(chart.series[0].data.length > 40) {
-      chart.series[0].addPoint([x, y], true, true, true);
-    } else {
-      chart.series[0].addPoint([x, y], true, false, true);
-    }*/
   }
   
   // DOM elements
   const loginElement = document.querySelector('#login-form');
+  const sidebar = document.querySelector('#sidebar');
   const contentElement = document.querySelector("#content-sign-in");
   const userDetailsElement = document.querySelector('#user-details');
   const authBarElement = document.querySelector('#authentication-bar');
@@ -44,9 +39,7 @@ function epochToJsDate(epochTime){
   const tableContainerElement = document.querySelector('#table-container');
   const chartsRangeInputElement = document.getElementById('charts-range');
   const loadDataButtonElement = document.getElementById('load-data');
-  const cardsCheckboxElement = document.querySelector('input[name=cards-checkbox]');
-  const gaugesCheckboxElement = document.querySelector('input[name=gauges-checkbox]');
-  const chartsCheckboxElement = document.querySelector('input[name=charts-checkbox]');
+  //const cardsCheckboxElement = document.querySelector('input[name=cards-checkbox]');
   // Select the loading div
   const loadingDiv = document.getElementById("loading");
   
@@ -66,6 +59,7 @@ function epochToJsDate(epochTime){
   const setupUI = (user) => {
     if (user) {
       //toggle UI elements
+      sidebar.style.display='block';
       loginElement.style.display = 'none';
       contentElement.style.display = 'block';
       authBarElement.style.display ='block';
@@ -77,57 +71,46 @@ function epochToJsDate(epochTime){
       console.log(uid);
   
       // Database paths (with user UID)
-      var dbPath = 'UsersData/' + uid.toString() + '/readings';
+      var ciclosPath = 'UsersData/' + uid.toString() + '/ciclos/CiclosRealizados';
+      //var dbPath = 'UsersData/' + uid.toString() + '/ciclos/'+ ciclosTotales;      
+      var dbPath = 'UsersData/' + uid.toString() + '/ciclos/0';      
       var chartPath = 'UsersData/' + uid.toString() + '/charts/range';
-  
+      
       // Database references
+      var ciclosRef = firebase.database().ref(ciclosPath);
       var dbRef = firebase.database().ref(dbPath);
       var chartRef = firebase.database().ref(chartPath);
-  
-      dbRef.on('value', snapshot =>{
-        console.log('Tamaño de Snapshot:'+snapshot.numChildren())
-      });
+      var ciclosTotales;
 
-      // CHARTS
-      // Number of readings to plot on charts
-      var chartRange = 0;
-      // Get number of readings to plot saved on database (runs when the page first loads and whenever there's a change in the database)
-      chartRef.on('value', snapshot =>{
-        
-        //chartRange = Number(snapshot.val());
-        // Render new charts to display new range of data
-        chartT = createTemperatureChart('PT100', 'chart-temperature');
-        chartT2 = createTemperatureChart('PT100', 'chart-temperature2');
-        chartP = createPressureChart();
-        // Update the charts with the new range
-        // Get the latest readings and plot them on charts (the number of plotted readings corresponds to the chartRange value)
-        
-        // Delete all data from charts to update with new values when a new range is selected
-        //chartT.destroy();        
-        //chartP.destroy();
-        dbRef.orderByKey().on('value', snapshot => {
+      ciclosRef.on('value', snapshot =>{//Obtiene el numero de los ciclos realizados en el equipo
+        ciclosTotales=Number(snapshot.val());
+        console.log('CiclosTotales:'+ciclosTotales)
+        dbPath = 'UsersData/' + uid.toString() + '/ciclos/'+ ciclosTotales;      
+        dbRef = firebase.database().ref(dbPath);
+      });
+      chartT = createTemperatureChart('PT100', 'chart-temperature');
+      chartT2 = createTemperatureChart('PT100', 'chart-temperature2');
+      chartP = createPressureChart();
+      // CHARTS      
+        dbRef.orderByKey().on('child_added', snapshot => {          
           const childCount = snapshot.numChildren();          
-          const chartRange = childCount > 100 ? 100 : childCount; // Set chartRange limit to 10 or the number of child nodes, whichever is smaller
+          const chartRange = childCount > 100 ? 100 : childCount; // Limita el rango de la grafica a 100 datos
           dbRef.orderByKey().limitToLast(chartRange).on('child_added', snapshot => {
-            var jsonData = snapshot.toJSON(); // example: {temperature: 25.02, humidity: 50.20, pressure: 1008.48, timestamp:1641317355}
-            // Save values on variables
+            var jsonData = snapshot.toJSON(); //convierte el snapshot a JSON            
             var temperature1 = jsonData.temperature1;
             var temperature2 = jsonData.temperature2;
             var pressure1 = jsonData.presionC;
-            var pressure2 = jsonData.presionP;
-            var timestamp = jsonData.timestamp;
-            // Plot the values on the charts
+            var timestamp = jsonData.timestamp;            
             plotValues(chartT, timestamp, temperature1);          
             plotValues(chartT2, timestamp, temperature2);          
             plotValues(chartP, timestamp, pressure1);
           });
-        });
-      });
+        });      
     
       // CARDS
       // Get the latest readings and display on cards
       dbRef.orderByKey().limitToLast(1).on('child_added', snapshot =>{
-        var jsonData = snapshot.toJSON(); // example: {temperature: 25.02, humidity: 50.20, pressure: 1008.48, timestamp:1641317355}        
+        var jsonData = snapshot.toJSON(); // example: {temperature: 25.02, pressure: 1008.48, timestamp:1641317355}        
         var temperature1 = jsonData.temperature1;
         var temperature2 = jsonData.temperature2;
         var temperature3 = jsonData.temperature3;
@@ -155,35 +138,39 @@ function epochToJsDate(epochTime){
   
       // Add event listener when delete form is submited
       deleteDataFormElement.addEventListener('submit', (e) => {
-        // delete data (readings)
         dbRef.remove();
       });
   
       // TABLE
       var lastReadingTimestamp; //saves last timestamp displayed on the table
-      // Function that creates the table with the first 100 readings
-      function createTable(){
-        // append all data to the table
+      function createTable(){        
         var firstRun = true;
         dbRef.orderByKey().on('child_added', function(snapshot) {
           if (snapshot.exists()) {
             var jsonData = snapshot.toJSON();
+            var usuario = jsonData.usuario;
+            var ciclo = jsonData.ciclo;
             var temperature1 = jsonData.temperature1;
             var temperature2 = jsonData.temperature2;
             var temperature3 = jsonData.temperature3;
             var temperature4 = jsonData.temperature4;
             var pressure1 = jsonData.presionC;
             var pressure2 = jsonData.presionP;
+            var alarma = jsonData.alarma;
             var timestamp = jsonData.timestamp;
             var content = '';
+            console.log(codeToAlarma(alarma))
             content += '<tr>';
             content += '<td>' + epochToDateTime(timestamp) + '</td>';
+            content += '<td>' + codeToUser(usuario) + '</td>';
+            content += '<td>' + codeToCiclo(ciclo) + '</td>';
             content += '<td>' + temperature1 + '</td>';
             content += '<td>' + temperature2 + '</td>';
             content += '<td>' + temperature3 + '</td>';
             content += '<td>' + temperature4 + '</td>';            
             content += '<td>' + pressure1 + '</td>';
             content += '<td>' + pressure2 + '</td>';
+            content += '<td>' + codeToAlarma(alarma) + '</td>';
             content += '</tr>';
             $('#tbody').prepend(content);
             // Save lastReadingTimestamp --> corresponds to the first timestamp on the returned snapshot data
@@ -196,52 +183,96 @@ function epochToJsDate(epochTime){
         });
       };
   
-      // append readings to table (after pressing More results... button)
-      function appendToTable(){
-        var dataList = []; // saves list of readings returned by the snapshot (oldest-->newest)
-        var reversedList = []; // the same as previous, but reversed (newest--> oldest)
-        console.log("APEND");
-        dbRef.orderByKey().limitToLast(100).endAt(lastReadingTimestamp).once('value', function(snapshot) {
-          // convert the snapshot to JSON
-          if (snapshot.exists()) {
-            snapshot.forEach(element => {
-              var jsonData = element.toJSON();
-              dataList.push(jsonData); // create a list with all data
-            });
-            lastReadingTimestamp = dataList[0].timestamp; //oldest timestamp corresponds to the first on the list (oldest --> newest)
-            reversedList = dataList.reverse(); // reverse the order of the list (newest data --> oldest data)
-  
-            var firstTime = true;
-            // loop through all elements of the list and append to table (newest elements first)
-            reversedList.forEach(element =>{
-              if (firstTime){ // ignore first reading (it's already on the table from the previous query)
-                firstTime = false;
-              }
-              else{
-                var temperature1 = element.temperature1;
-                var temperature2 = element.temperature2;
-                var temperature3 = element.temperature3;
-                var temperature4 = element.temperature4;
-                var pressure1 = element.pressure1;
-                var pressure2 = element.pressure2;
-                var timestamp = element.timestamp;
-                var content = '';
-                content += '<tr>';
-                content += '<td>' + epochToDateTime(timestamp) + '</td>';
-                content += '<td>' + temperature1 + '</td>';
-                content += '<td>' + temperature2 + '</td>';
-                content += '<td>' + temperature3 + '</td>';
-                content += '<td>' + temperature4 + '</td>';
-                content += '<td>' + pressure1 + '</td>';
-                content += '<td>' + pressure2 + '</td>';
-                content += '</tr>';
-                $('#tbody').append(content);
-              }
-            });
-          }
-        });
+      function codeToCiclo(ciclo){
+        if(ciclo==0){
+          return "Ninguno";
+        }else if(ciclo==1){
+          return "Liquidos A"
+        }else if(ciclo==2){
+          return "Liquidos B"
+        }else if(ciclo==3){
+          return "Liquidos C"
+        }else if(ciclo==4){
+          return "Envueltos 134"
+        }else if(ciclo==5){
+          return "Envueltos 121"
+        }else if(ciclo==6){
+          return "Envuelto Doble 1"
+        }else if(ciclo==7){
+          return "Envuelto Doble 2"
+        }else if(ciclo==8){
+          return "Prion"
+        }else if(ciclo==9){
+          return "Bowie & Dick"
+        }else if(ciclo==10){
+          return "Test de Fugas"
+        }else if(ciclo>10 && ciclo<31){
+          return "Personalizado "+(ciclo-10)
+        }
       }
-  
+      function codeToUser(usuario){
+        if(usuario==0){
+          return "Administrador";
+        }else if(usuario==1){
+          return "Operador 1"
+        }else if(usuario==2){
+          return "Operador 2"
+        }else if(usuario==3){
+          return "Operador 3"
+        }else if(usuario==4){
+          return "Operador 4"
+        }else if(usuario==5){
+          return "Operador 5"
+        }else if(usuario==6){
+          return "Operador 6"
+        }else if(usuario==7){
+          return "Operador 7"
+        }else if(usuario==8){
+          return "Operador 8"
+        }else if(usuario==9){
+          return "Tecnico"
+        }else{
+          return "----"
+        }
+      }
+      function codeToAlarma(codigo){
+        if(codigo==0){
+          return "----";
+        }else if(codigo==1){
+          return "Parada de Emergencia"
+        }else if(codigo==2){
+          return "Puerta Abierta"
+        }else if(codigo==3){
+          return "Termostato"
+        }else if(codigo==4){
+          return "Sobre Temperatura"
+        }else if(codigo==5){
+          return "Tiempo Prolongado de Calentamiento"
+        }else if(codigo==6){
+          return "Sobre Presion"
+        }else if(codigo==7){
+          return "Error en Bomba de Vacio"
+        }else if(codigo==8){
+          return "Error de Vacio"
+        }else if(codigo==10){
+          return "Pre-Calentando"
+        }else if(codigo==11){
+          return "Pre-Vacio"
+        }else if(codigo==12){
+          return "Calentando"
+        }else if(codigo==13){
+          return "Despresurizando"
+        }else if(codigo==14){
+          return "Ciclo Finalizado"
+        }else if(codigo==15){
+          return "Secando"
+        }else if(codigo==16){
+          return "Esterilizando"
+        }else{
+          return "----";
+        }
+      }
+        
       viewDataButtonElement.addEventListener('click', (e) =>{
         // Toggle DOM elements
         tableContainerElement.style.display = 'block';
@@ -263,5 +294,6 @@ function epochToJsDate(epochTime){
       authBarElement.style.display ='none';
       userDetailsElement.style.display ='none';
       contentElement.style.display = 'none';
+      sidebar.style.display='none';
     }
   }
