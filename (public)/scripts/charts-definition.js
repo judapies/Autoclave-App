@@ -2,124 +2,83 @@
 window.addEventListener('load', onload);
 
 function onload(event){
-  chartT = createTemperatureChart('PT100', 'chart-temperature');
-  chartP = createPressureChart();
+  
 }
 
-// Create Temperature Chart
-function createTemperatureChart(title, elementId) {
-  var chart = new Highcharts.Chart({
-    chart:{
-      renderTo: elementId,
-      type: 'spline' 
+function createChart(){
+  const etiquetas = [""]
+  // Podemos tener varios conjuntos de datos. Comencemos con uno
+  const datos1 = {
+    label: "Temperatura 1",
+    data: [0], // La data es un arreglo que debe tener la misma cantidad de valores que la cantidad de etiquetas    
+    borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
+    borderWidth: 1,// Ancho del borde
+    pointStyle:'dash',
+  };
+  const datos2 = {
+    label: "Temperatura 2",
+    data: [0], // La data es un arreglo que debe tener la misma cantidad de valores que la cantidad de etiquetas    
+    borderColor: 'rgba(255, 159, 64, 1)',// Color del borde
+    borderWidth: 1,// Ancho del borde
+    pointStyle:'dash',
+  };
+  const datos3 = {
+    label: "Temperatura 3",
+    data: [0], // La data es un arreglo que debe tener la misma cantidad de valores que la cantidad de etiquetas    
+    borderColor: 'rgba(255, 0, 0, 1)',// Color del borde
+    borderWidth: 1,// Ancho del borde
+    pointStyle:'dash',
+  };
+  const datos4 = {
+    label: "Temperatura 4",
+    data: [0], // La data es un arreglo que debe tener la misma cantidad de valores que la cantidad de etiquetas  
+    borderColor: 'rgba(0, 0, 0, 1)',// Color del borde
+    borderWidth: 1,// Ancho del borde
+    pointStyle:'dash',
+  };
+  var chart = new Chart($grafica, {
+    type: 'line',// Tipo de gráfica
+    data: {
+      labels: etiquetas,
+      datasets: [
+          datos1,
+          datos2,
+          datos3,
+          datos4          
+      ]
     },
-    series: [
-      {
-        name: title
-      }
-    ],
-    title: { 
-      text: undefined
-    },
-    plotOptions: {
-      line: { 
-        animation: false,
-        dataLabels: { 
-          enabled: true 
-        }
-      }
-    },
-    xAxis: {
-      type: 'datetime',
-      dateTimeLabelFormats: { second: '%H:%M:%S' }
-    },
-    yAxis: {
-      title: { 
-        text: 'Temperatura °C' 
-      }
-    },
-    credits: { 
-      enabled: false 
-    }
-  });
-  return chart;
-}
-
-// Create Temperature Chart
-function createTemperatureChart2() {
-  var chart = new Highcharts.Chart({
-    chart:{ 
-      renderTo:'chart-temperature',
-      type: 'spline' 
-    },
-    series: [
-      {
-        name: 'PT100'
-      }
-    ],
-    title: { 
-      text: undefined
-    },
-    plotOptions: {
-      line: { 
-        animation: false,
-        dataLabels: { 
-          enabled: true 
-        }
-      }
-    },
-    xAxis: {
-      type: 'datetime',
-      dateTimeLabelFormats: { second: '%H:%M:%S' }
-    },
-    yAxis: {
-      title: { 
-        text: 'Temperature Celsius Degrees' 
-      }
-    },
-    credits: { 
-      enabled: false 
-    }
   });
   return chart;
 }
 
 // Create Pressure Chart
 function createPressureChart() {
-  var chart = new Highcharts.Chart({
-    chart:{ 
-      renderTo:'chart-pressure',
-      type: 'spline'  
+  const etiquetas = [""]
+  // Podemos tener varios conjuntos de datos. Comencemos con uno
+  const datos1 = {
+    label: "Presion Camara",
+    data: [0], // La data es un arreglo que debe tener la misma cantidad de valores que la cantidad de etiquetas    
+    borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
+    borderWidth: 1,// Ancho del borde
+    pointStyle:'dash',
+  };
+  const datos2 = {
+    label: "Presion Pre-Camara",
+    data: [0], // La data es un arreglo que debe tener la misma cantidad de valores que la cantidad de etiquetas    
+    borderColor: 'rgba(255, 159, 64, 1)',// Color del borde
+    borderWidth: 1,// Ancho del borde
+    pointStyle:'dash',
+  };
+  
+  var chart = new Chart($graficap, {
+    type: 'line',// Tipo de gráfica
+    data: {
+      labels: etiquetas,
+      datasets: [
+          datos1,
+          datos2,        
+      ]
     },
-    series: [{
-      name: 'Presion Camara'
-    }],
-    title: { 
-      text: undefined
-    },    
-    plotOptions: {
-      line: { 
-        animation: false,
-        dataLabels: { 
-          enabled: true 
-        }
-      },
-      series: { 
-        color: '#A62639' 
-      }
-    },
-    xAxis: {
-      type: 'datetime',
-      dateTimeLabelFormats: { second: '%H:%M:%S' }
-    },
-    yAxis: {
-      title: { 
-        text: 'Pressure (hPa)' 
-      }
-    },
-    credits: { 
-      enabled: false 
-    }
   });
   return chart;
 }

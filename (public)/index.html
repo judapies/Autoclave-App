@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autoclave JP App</title>
     <!-- include Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
@@ -28,13 +29,12 @@
     </script>
 
     <!-- include highchartsjs to build the charts-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <!-- include to use jquery-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!--include icons from fontawesome-->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <!-- include Gauges Javascript library-->
-    <script src="https://cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.7/all/gauge.min.js"></script>
     <!--reference for favicon-->
     <link rel="icon" type="image/png" href="favicon.png">
     <!--reference a stylesheet-->
@@ -44,21 +44,55 @@
   <body>
     <!--SIDE BAR-->
     <div class="sidebar" id="sidebar">
-      <a href="/" id="home">Pagina Principal</a>
-      <a href="/" id="ciclos">Ver Ciclos anteriores</a>
+      <a href="#" id="home">Pagina Principal</a>
+      <a href="#" id="ciclos">Ver Ciclos anteriores</a>
       <a href="/" id="logout-link">Cerrar Sesión</a>
     </div>
-    
+
     <!--TOP BAR-->
     <div class="topnav">
-      <img src="https://jpinglobal.com/images/ando_sistema/Logo-JP_2019-05.png" id="imagen" alt="Logo" style="max-width: 100%;height: 100px;">
+      <img src="https://jpinglobal.com/images/ando_sistema/Logo-JP_2019-05.png" id="imagen" alt="Logo" style="max-width: 70%;height: 100px;">
       <h2>Autoclave JP App </h2>
+    </div>
+
+    <!--Ciclos Anteriores FORM-->
+    <div id="ciclosAnteriores" style="display: none;">
+      <p><h2>Seleccione el ciclo que desea ver</h2></p>
+      <div class="form-elements-container2">
+        <label for="input-text"><b>Numero de ciclo</b></label>
+        <input type="text" placeholder="Ingrese el numero del ciclo" id="input-ciclo" required>
+        <button type="submit" id="cicloAnterior-button">Buscar</button>
+        <button onclick="exportTableToExcel('tblData')">Exportar a Excel</button>
+      </div>
+
+      <!--TABLE WITH ALL DATA-->
+    <div class ="cards2">
+      <div class="card2" id="table-container2" style= "display:none;">
+        <table id="readings-table2">
+            <tr id="theader">
+              <th>Fecha y Hora</th>
+              <th>Usuario</th>
+              <th>Ciclo</th>
+              <th>T1(ºC)</th>
+              <th>T2(ºC)</th>
+              <th>T3(ºC)</th>
+              <th>T4(ºC)</th>
+              <th>PC(kPa)</th>
+              <th>PP(kPa)</th>
+              <th>Evento</th>
+            </tr>
+            <tbody id="tbody2">
+            </tbody>
+        </table>
+      </div>
+    </div>
     </div>
 
     <!--AUTHENTICATION BAR (USER DETAILS/LOGOUT BUTTON)-->
     <div id="authentication-bar" style="display: none;">
       <p><span id="authentication-status">Usuario</span>
         <span id="user-details">USEREMAIL</span>        
+        <span id="ciclo-details">Ciclo:</span>   
       </p>
     </div>
 
@@ -117,24 +151,38 @@
         <!--TEMPERATURE-CHART-->
         <div class="cards2">
           <div class="card2">
-            <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> GRAFICA DE TEMPERATURA 1</p>
-            <div id="chart-temperature" class="chart-container"></div>
-          </div>
-        </div>
-        <!--TEMPERATURE-CHART-->
-        <div class="cards2">
-          <div class="card2">
-            <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> GRAFICA DE TEMPERATURA 2</p>
-            <div id="chart-temperature2" class="chart-container"></div>
+            <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> GRAFICA DE TEMPERATURAS</p>
+            <canvas id="grafica"></canvas>
           </div>
         </div>
         <!--PRESSURE-CHART-->
         <div class="cards2">
           <div class="card2">
+            <p><i class="fas fa-stopwatch" style="color:#059e8a;"></i> GRAFICA DE PRESIONES</p>
+            <canvas id="graficap"></canvas>
+          </div>
+        </div>
+        <!--TEMPERATURE-CHART-->
+        <!--<div class="cards2">
+          <div class="card2">
+            <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> GRAFICA DE TEMPERATURA 1</p>
+            <div id="chart-temperature" class="chart-container"></div>
+          </div>
+        </div>-->
+        <!--TEMPERATURE-CHART-->
+        <!--<div class="cards2">
+          <div class="card2">
+            <p><i class="fas fa-thermometer-half" style="color:#059e8a;"></i> GRAFICA DE TEMPERATURA 2</p>
+            <div id="chart-temperature2" class="chart-container"></div>
+          </div>
+        </div>-->
+        <!--PRESSURE-CHART-->
+        <!--<div class="cards2">
+          <div class="card2">
             <p><i class="fas fa-stopwatch" style="color:#059e8a;"></i> GRAFICA DE PRESIÓN DE LA CAMARA</p>
             <div id="chart-pressure" class="chart-container"></div>
           </div>
-        </div>
+        </div>-->
       </div>
 
     <!--LAST UPDATE-->
@@ -193,6 +241,7 @@
     <script src="scripts/charts-definition.js"></script>
     <script src="scripts/gauges-definition.js"></script>
     <script src="scripts/index.js"></script>
+    <script src="scripts/excel.js"></script>
 
   </body>
 
